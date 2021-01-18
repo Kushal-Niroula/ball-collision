@@ -3,9 +3,24 @@
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext('2d');
 const NUM = 10;
-canvas.width = 900;
-canvas.height = 500;
+canvas.width = 1000;
+canvas.height = 600;
 canvas.style.border ="3px solid black";
+let reset = document.getElementById("reset");
+let pause = document.getElementById("pause");
+let flag =false
+
+pause.onclick= function(){
+    flag = !flag;
+    if(flag == false){
+        pause.innerHTML = "pause";
+        requestAnimationFrame(update);
+    }
+    else{
+        pause.innerHTML = "play";
+    }
+}
+
 
 
 let ballArray = []
@@ -57,8 +72,9 @@ ballArray.forEach(function(ball){
 
 
 });
+if(flag == false){
 requestAnimationFrame(update);
-
+}
 }
 
 

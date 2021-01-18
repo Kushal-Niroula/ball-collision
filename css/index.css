@@ -1,0 +1,13 @@
+#canvas {
+    margin-left: 10%;
+}
+a{
+    padding:8px;
+    background-color: orangered;
+    text-decoration: none;
+    color:white;
+}
+.btns{
+    text-align: center;
+    padding:8px;
+}
