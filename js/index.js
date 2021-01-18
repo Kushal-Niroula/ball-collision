@@ -5,16 +5,17 @@ const ctx = canvas.getContext('2d');
 const NUM = 10;
 canvas.width = 1000;
 canvas.height = 600;
-canvas.style.border ="3px solid black";
-let reset = document.getElementById("reset");
-let pause = document.getElementById("pause");
-let flag =false
+canvas.style.border = "3px solid black";
 
-pause.onclick= function(){
+let pause = document.getElementById("pause");
+let flag = false
+
+
+pause.onclick = function(){
     flag = !flag;
     if(flag == false){
         pause.innerHTML = "pause";
-        requestAnimationFrame(update);
+        requestAnimationFrame(update); /* resumes animation if pause flag is set to false */
     }
     else{
         pause.innerHTML = "play";
@@ -23,10 +24,12 @@ pause.onclick= function(){
 
 
 
-let ballArray = []
+let ballArray = [];
 
+
+/* initializing NUM number of ball */
 for (var i = 0 ; i < NUM ; i++){
-    circ= randomCircle();
+    circ = randomCircle();
 
     circ.dx = circ.dx == 0 ? 1: circ.dx;
     circ.dy = circ.dy == 0 ? 1: circ.dy;
@@ -40,26 +43,47 @@ for (var i = 0 ; i < NUM ; i++){
     });
 }
 
+
 update();
+
+
+
+
+/* function to update ball position in each frame */
+/* optimized for stress test by checking only those in the same quadrant*/
 
 function update(){
 
 ctx.clearRect(0,0,canvas.width,canvas.height);
 
 ballArray.forEach(function(ball){
+    let quadList = [];
     draw(ball.x,ball.y,ball.r);
 
-    ball.x = ball.x+ball.dx;
-    ball.y= ball.y+ball.dy;
+    ball.x = ball.x + ball.dx;
+    ball.y = ball.y + ball.dy;
 
-    if (ball.x>=(canvas.width-ball.r) || ball.x<=ball.r){
+
+    /* boundary wall detection and collision */
+    if (ball.x>= (canvas.width - ball.r) || ball.x <= ball.r){
         ball.dx= -1 * ball.dx; 
     }
     if(ball.y >= (canvas.height -ball.r) || ball.y<=ball.r){
         ball.dy = -1*ball.dy;
     }
 
-    ballArray.forEach(function(newBall){
+    /* quadrant checking and testing only nearer balls for collision */
+    quad = checkQuadrant(ball.x,ball.y);
+
+    ballArray.forEach(function(bq){
+        if(checkQuadrant(bq.x,bq.y) == quad){
+        quadList.push(bq);}
+        
+    })
+
+
+
+    quadList.forEach(function(newBall){
         let d = calculateDistance(ball.x,ball.y,newBall.x,newBall.y);
         if(d<=(ball.r + newBall.r) && d != 0 ){
             ball.dx= -ball.dx;
@@ -73,22 +97,29 @@ ballArray.forEach(function(ball){
 
 });
 if(flag == false){
-requestAnimationFrame(update);
+requestAnimationFrame(update); /*if pause flag is set to false , animation resumes */
 }
 }
 
 
 
+
+/* function to draw a circle */
+/* parameters x: x-coordinate, y: y-coordinate ,r:radius */
 
 function draw(x,y,r){
-    ctx.fillStyle="blue";
+    ctx.fillStyle = "blue";
     ctx.beginPath();
-    ctx.arc(x,y,r,0,2*Math.PI);
+    ctx.arc(x,y,r,0,2 * Math.PI);
     ctx.fill();
 
 }
+
+/* function to randomize */
+/* radius , (x,y) coordinate , and speed of balls */
+
 function randomCircle(){
-    let r= Math.ceil((Math.random()*10)+5);
+    let r = Math.ceil((Math.random()*10)+5);
     return{
         
         x:Math.floor((Math.random()*(canvas.width-2*r)+r)),
@@ -100,6 +131,31 @@ function randomCircle(){
     }
 }
 
+/* function to calculate distance between two points in cartesian plane */
+
 function calculateDistance(x1,y1,x2,y2){
     return(Math.sqrt((x2-x1) ** 2 + (y2-y1) ** 2));
+}
+
+
+/* For the stress test , checking the quadrant of the ball */
+function checkQuadrant(x,y){
+    if(x<500){
+        if(y<300){
+            return 2;
+        }
+        else{
+            return 3;
+        }
+    
+    }
+    else{
+        if(y>300){
+            return 1;
+        }
+        else{
+
+            return 4;
+        }
+    }
 }

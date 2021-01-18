@@ -6,6 +6,7 @@ a{
     background-color: orangered;
     text-decoration: none;
     color:white;
+    cursor: pointer;
 }
 .btns{
     text-align: center;
