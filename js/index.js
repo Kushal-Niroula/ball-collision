@@ -58,18 +58,28 @@ ctx.clearRect(0,0,canvas.width,canvas.height);
 
 ballArray.forEach(function(ball){
     let quadList = [];
-    draw(ball.x,ball.y,ball.r);
 
+
+    draw(ball.x,ball.y,ball.r);
     ball.x = ball.x + ball.dx;
     ball.y = ball.y + ball.dy;
 
 
+
+
     /* boundary wall detection and collision */
-    if (ball.x>= (canvas.width - ball.r) || ball.x <= ball.r){
-        ball.dx= -1 * ball.dx; 
+    if (ball.x>= (canvas.width - ball.r)){
+        ball.dx= -1 * Math.abs(ball.dx); 
     }
-    if(ball.y >= (canvas.height -ball.r) || ball.y<=ball.r){
-        ball.dy = -1*ball.dy;
+    if(ball.x <= ball.r){
+        ball.dx = Math.abs(ball.dx);
+    }
+
+    if(ball.y >= (canvas.height -ball.r)){
+        ball.dy = -1*Math.abs(ball.dy);
+    }
+    if(ball.y<=ball.r){
+        ball.dy = Math.abs(ball.dy);
     }
 
     /* quadrant checking and testing only nearer balls for collision */
@@ -86,10 +96,12 @@ ballArray.forEach(function(ball){
     quadList.forEach(function(newBall){
         let d = calculateDistance(ball.x,ball.y,newBall.x,newBall.y);
         if(d<=(ball.r + newBall.r) && d != 0 ){
+            
             ball.dx= -ball.dx;
-            ball.dy = -ball.dy;
+            ball.dy =  -ball.dy;
             newBall.dx = -newBall.dx;
             newBall.dy = -newBall.dy;
+            
         }
     })
 
